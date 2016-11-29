@@ -1,1 +1,1 @@
-# market_watcher
+通过CThostFtdcMdSpi接口订阅行情，并将行情信息经由D-Bus发送。
