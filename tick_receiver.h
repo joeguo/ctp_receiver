@@ -64,7 +64,7 @@ class CTickReceiver : public CThostFtdcMdSpi {
     QObject * const receiver;
 
 public:
-    explicit CTickReceiver(QObject *receiver);
+    explicit CTickReceiver(QObject *obj);
     ~CTickReceiver();
 
     inline void postToReceiver(QEvent *event);

@@ -7,8 +7,8 @@
 #include "market_watcher.h"
 #include "tick_receiver.h"
 
-CTickReceiver::CTickReceiver(QObject *receiver) :
-    receiver(receiver)
+CTickReceiver::CTickReceiver(QObject *obj) :
+    receiver(obj)
 {
 }
 
