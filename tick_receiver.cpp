@@ -1,6 +1,3 @@
-#include <cstddef>
-#include <string.h>
-
 #include <QCoreApplication>
 #include <QDebug>
 

@@ -11,7 +11,7 @@ MarketWatcher::MarketWatcher(QObject *parent) :
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
     settings.beginGroup("SubscribeList");
-    this->subscribeSet = settings.childKeys().toSet();
+    subscribeSet = settings.childKeys().toSet();
     settings.endGroup();
 
     pUserApi = CThostFtdcMdApi::CreateFtdcMdApi();
@@ -120,8 +120,8 @@ void MarketWatcher::subscribe()
     }
 
     pUserApi->SubscribeMarketData(ppInstrumentID, num);
-    delete subscribe_array;
     delete ppInstrumentID;
+    delete subscribe_array;
 }
 
 static inline quint8 charToDigit(const char ten, const char one)
@@ -137,8 +137,6 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
     second = charToDigit(depthMarketDataField.UpdateTime[6], depthMarketDataField.UpdateTime[7]);
 
     quint32 time = (hour << 16) + (minute << 8) + second;
-    // int actionDay = strtol(depthMarketDataField.ActionDay, NULL, 10);
-    // int tradingDay = strtol(depthMarketDataField.TradingDay, NULL, 10);
 
     emit newTick(depthMarketDataField.Volume,
                  depthMarketDataField.Turnover,
@@ -148,18 +146,11 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
                  depthMarketDataField.InstrumentID);
 
     // TODO save tick
-
-    /*
-    quint8 year, month, day;
-    year  = charToDigit(depthMarketDataField.ActionDay[2], depthMarketDataField.ActionDay[3]);
-    month = charToDigit(depthMarketDataField.ActionDay[4], depthMarketDataField.ActionDay[5]);
-    day   = charToDigit(depthMarketDataField.ActionDay[6], depthMarketDataField.ActionDay[7]);
-    */
 }
 
 QStringList MarketWatcher::getSubscribeList()
 {
-    return this->subscribeSet.values();
+    return subscribeSet.toList();
 }
 
 void MarketWatcher::quit()
