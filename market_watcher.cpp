@@ -136,7 +136,7 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
     minute = charToDigit(depthMarketDataField.UpdateTime[3], depthMarketDataField.UpdateTime[4]);
     second = charToDigit(depthMarketDataField.UpdateTime[6], depthMarketDataField.UpdateTime[7]);
 
-    quint32 time = (hour << 16) + (minute << 8) + second;
+    uint time = (hour * 3600) + (minute * 60) + second;
 
     emit newTick(depthMarketDataField.Volume,
                  depthMarketDataField.Turnover,
