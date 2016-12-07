@@ -12,17 +12,17 @@ struct CThostFtdcDepthMarketDataField;
 class MarketWatcher : public QObject {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.ctp.market_watcher")
-protected:
-    QAtomicInt nRequestID;
-    CThostFtdcMdApi *pUserApi;
-    CTickReceiver *pReceiver;
-    QSet<QString> subscribeSet;
-
 public:
     explicit MarketWatcher(QObject *parent = 0);
     ~MarketWatcher();
 
     void customEvent(QEvent *);
+
+protected:
+    QAtomicInt nRequestID;
+    CThostFtdcMdApi *pUserApi;
+    CTickReceiver *pReceiver;
+    QSet<QString> subscribeSet;
 
     void login();
     void subscribe();

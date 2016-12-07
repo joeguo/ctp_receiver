@@ -21,7 +21,7 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     settings.beginGroup("FrontSites");
     QStringList keys = settings.childKeys();
     const QString protocol = "tcp://";
-    foreach (const QString str, keys) {
+    foreach (const QString &str, keys) {
         QString address = settings.value(str).toString();
         pUserApi->RegisterFront((protocol + address).toLatin1().data());
     }
