@@ -148,12 +148,12 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
     // TODO save tick
 }
 
-QStringList MarketWatcher::getSubscribeList()
+QStringList MarketWatcher::getSubscribeList() const
 {
     return subscribeSet.toList();
 }
 
-void MarketWatcher::quit()
+void MarketWatcher::quit() const
 {
     QCoreApplication::quit();
 }

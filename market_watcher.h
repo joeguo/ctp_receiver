@@ -16,13 +16,13 @@ public:
     explicit MarketWatcher(QObject *parent = 0);
     ~MarketWatcher();
 
-    void customEvent(QEvent *);
-
 protected:
     QAtomicInt nRequestID;
     CThostFtdcMdApi *pUserApi;
     CTickReceiver *pReceiver;
     QSet<QString> subscribeSet;
+
+    void customEvent(QEvent *);
 
     void login();
     void subscribe();
@@ -32,8 +32,8 @@ signals:
     void newTick(int volume, double turnover, double openInterest, uint time, double lastPrice, const QString& instrumentID);
 
 public slots:
-    QStringList getSubscribeList();
-    void quit();
+    QStringList getSubscribeList() const;
+    void quit() const;
 };
 
 #endif // MARKET_WATCHER_H
