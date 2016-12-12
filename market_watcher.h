@@ -29,7 +29,7 @@ protected:
     void processDepthMarketData(const CThostFtdcDepthMarketDataField&);
 
 signals:
-    void newTick(int volume, double turnover, double openInterest, uint time, double lastPrice, const QString& instrumentID);
+    void newMarketData(const QString& instrumentID, uint time, double lastPrice, int volume, double turnover, double openInterest);
 
 public slots:
     QStringList getSubscribeList() const;

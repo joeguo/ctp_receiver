@@ -10,11 +10,13 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     nRequestID = 0;
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
+    QString flowPath = settings.value("FlowPath").toString();
+
     settings.beginGroup("SubscribeList");
     subscribeSet = settings.childKeys().toSet();
     settings.endGroup();
 
-    pUserApi = CThostFtdcMdApi::CreateFtdcMdApi();
+    pUserApi = CThostFtdcMdApi::CreateFtdcMdApi(flowPath.toLatin1().data());
     pReceiver = new CTickReceiver(this);
     pUserApi->RegisterSpi(pReceiver);
 
@@ -138,12 +140,12 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
 
     uint time = (hour * 3600) + (minute * 60) + second;
 
-    emit newTick(depthMarketDataField.Volume,
-                 depthMarketDataField.Turnover,
-                 depthMarketDataField.OpenInterest,
-                 time,
-                 depthMarketDataField.LastPrice,
-                 depthMarketDataField.InstrumentID);
+    emit newMarketData(depthMarketDataField.InstrumentID,
+                       time,
+                       depthMarketDataField.LastPrice,
+                       depthMarketDataField.Volume,
+                       depthMarketDataField.Turnover,
+                       depthMarketDataField.OpenInterest);
 
     // TODO save tick
 }
