@@ -67,7 +67,7 @@ public:
     explicit CTickReceiver(QObject *obj);
     ~CTickReceiver();
 
-    inline void postToReceiver(QEvent *event);
+    void postToReceiver(QEvent *event) const;
 
     void OnFrontConnected();
 

@@ -14,7 +14,7 @@ CTickReceiver::~CTickReceiver()
 
 }
 
-void CTickReceiver::postToReceiver(QEvent *event)
+inline void CTickReceiver::postToReceiver(QEvent *event) const
 {
     QCoreApplication::postEvent(receiver, event);
 }

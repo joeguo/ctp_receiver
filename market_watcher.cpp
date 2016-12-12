@@ -92,6 +92,10 @@ void MarketWatcher::customEvent(QEvent *event)
     }
 }
 
+/*!
+ * \brief MarketWatcher::login
+ * 用配置文件中的账号信息登陆行情端
+ */
 void MarketWatcher::login()
 {
     QSettings settings("ctp", "market_watcher");
@@ -111,6 +115,10 @@ void MarketWatcher::login()
     pUserApi->ReqUserLogin(&reqUserLogin, nRequestID.fetchAndAddRelaxed(1));
 }
 
+/*!
+ * \brief MarketWatcher::subscribe
+ * 订阅subscribeSet里的合约
+ */
 void MarketWatcher::subscribe()
 {
     const int num = subscribeSet.size();
