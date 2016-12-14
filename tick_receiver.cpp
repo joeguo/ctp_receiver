@@ -48,6 +48,10 @@ void CTickReceiver::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
     }
 }
 
+void CTickReceiver::OnRspUserLogout(CThostFtdcUserLogoutField *, CThostFtdcRspInfoField *, int, bool)
+{
+}
+
 void CTickReceiver::OnRspError(CThostFtdcRspInfoField *, int, bool)
 {
 
