@@ -33,8 +33,6 @@ protected:
     void customEvent(QEvent *);
 
     void login();
-    void logout();
-
     void subscribe();
     void processDepthMarketData(const CThostFtdcDepthMarketDataField&);
 

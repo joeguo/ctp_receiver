@@ -48,20 +48,6 @@ void CTickReceiver::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
     }
 }
 
-void CTickReceiver::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-    Q_UNUSED(nRequestID)
-    Q_UNUSED(bIsLast)
-
-    if (pRspInfo != NULL) {
-        if (pRspInfo->ErrorID == 0) {
-            postToReceiver(new UserLogoutEvent());
-        } else {
-            qDebug() << pRspInfo->ErrorMsg;
-        }
-    }
-}
-
 void CTickReceiver::OnRspError(CThostFtdcRspInfoField *, int, bool)
 {
 

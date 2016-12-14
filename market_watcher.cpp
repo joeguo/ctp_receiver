@@ -119,19 +119,6 @@ void MarketWatcher::login()
 }
 
 /*!
- * \brief MarketWatcher::logout
- * 登出行情端 (貌似调用无效)
- */
-void MarketWatcher::logout()
-{
-    CThostFtdcUserLogoutField logoutField;
-    strcpy(logoutField.BrokerID, c_brokerID);
-    strcpy(logoutField.UserID, c_userID);
-
-    pUserApi->ReqUserLogout(&logoutField, nRequestID.fetchAndAddRelaxed(1));
-}
-
-/*!
  * \brief MarketWatcher::subscribe
  * 订阅subscribeSet里的合约
  */
