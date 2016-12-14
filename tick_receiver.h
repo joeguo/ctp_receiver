@@ -51,6 +51,12 @@ public:
         QEvent(QEvent::Type(RSP_USER_LOGIN)) {}
 };
 
+class UserLogoutEvent : public QEvent {
+public:
+    UserLogoutEvent() :
+        QEvent(QEvent::Type(RSP_USER_LOGOUT)) {}
+};
+
 class DepthMarketDataEvent : public QEvent {
 public:
     const CThostFtdcDepthMarketDataField DepthMarketDataField;

@@ -1,6 +1,7 @@
 #ifndef MARKET_WATCHER_H
 #define MARKET_WATCHER_H
 
+#include <QObject>
 #include <QAtomicInt>
 #include <QStringList>
 #include <QSet>
@@ -22,9 +23,19 @@ protected:
     CTickReceiver *pReceiver;
     QSet<QString> subscribeSet;
 
+    QByteArray brokerID;
+    QByteArray userID;
+    QByteArray password;
+    char* c_brokerID;
+    char* c_userID;
+    char* c_password;
+
     void customEvent(QEvent *);
 
+    bool loggedIn;
     void login();
+    void logout();
+
     void subscribe();
     void processDepthMarketData(const CThostFtdcDepthMarketDataField&);
 
@@ -33,7 +44,7 @@ signals:
 
 public slots:
     QStringList getSubscribeList() const;
-    void quit() const;
+    void quit();
 };
 
 #endif // MARKET_WATCHER_H
