@@ -32,7 +32,6 @@ protected:
 
     void customEvent(QEvent *);
 
-    bool loggedIn;
     void login();
     void logout();
 

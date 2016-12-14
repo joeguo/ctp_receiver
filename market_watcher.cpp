@@ -8,7 +8,6 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     QObject(parent)
 {
     nRequestID = 0;
-    loggedIn = 0;
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
     QByteArray flowPath = settings.value("FlowPath").toString().toLatin1();
@@ -85,11 +84,9 @@ void MarketWatcher::customEvent(QEvent *event)
     case HEARTBEAT_WARNING:
         break;
     case RSP_USER_LOGIN:
-        loggedIn = true;
         subscribe();
         break;
     case RSP_USER_LOGOUT:
-        loggedIn = false;
         break;
     case RSP_ERROR:
     case RSP_SUB_MARKETDATA:
@@ -123,7 +120,7 @@ void MarketWatcher::login()
 
 /*!
  * \brief MarketWatcher::logout
- * 登出行情端
+ * 登出行情端 (貌似调用无效)
  */
 void MarketWatcher::logout()
 {
@@ -184,7 +181,5 @@ QStringList MarketWatcher::getSubscribeList() const
 
 void MarketWatcher::quit()
 {
-    if (loggedIn)
-        logout();
-    QTimer::singleShot(1500, qApp, SLOT(quit()));
+    QCoreApplication::quit();
 }
