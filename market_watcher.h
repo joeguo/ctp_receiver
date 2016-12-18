@@ -5,6 +5,7 @@
 #include <QAtomicInt>
 #include <QStringList>
 #include <QSet>
+#include <QMultiMap>
 
 class CThostFtdcMdApi;
 class CTickReceiver;
@@ -30,7 +31,10 @@ protected:
     char* c_userID;
     char* c_password;
 
-    void customEvent(QEvent *);
+    QMultiMap<QString, QPair<QString, QString>> tradeTimeMap;
+    QMultiMap<QString, QString> instrumentMap;
+
+    void customEvent(QEvent *) override;
 
     void login();
     void subscribe();

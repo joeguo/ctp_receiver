@@ -1,5 +1,7 @@
 #include <QSettings>
+#include <QDebug>
 
+#include "market.h"
 #include "market_watcher.h"
 #include "market_watcher_adaptor.h"
 #include "tick_receiver.h"
@@ -8,6 +10,8 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     QObject(parent)
 {
     nRequestID = 0;
+
+    loadCommonMarketData(tradeTimeMap, instrumentMap);
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
     QByteArray flowPath = settings.value("FlowPath").toString().toLatin1();
@@ -63,7 +67,7 @@ void MarketWatcher::customEvent(QEvent *event)
         break;
     case FRONT_DISCONNECTED:
     {
-        FrontDisconnectedEvent *fevent = static_cast<FrontDisconnectedEvent*>(event);
+        auto *fevent = static_cast<FrontDisconnectedEvent*>(event);
         // TODO
         switch (fevent->getReason()) {
         case 0x1001: // 网络读失败
@@ -94,7 +98,7 @@ void MarketWatcher::customEvent(QEvent *event)
         break;
     case DEPTH_MARKET_DATA:
     {
-        DepthMarketDataEvent *devent = static_cast<DepthMarketDataEvent*>(event);
+        auto *devent = static_cast<DepthMarketDataEvent*>(event);
         processDepthMarketData(devent->DepthMarketDataField);
     }
         break;
@@ -111,6 +115,7 @@ void MarketWatcher::customEvent(QEvent *event)
 void MarketWatcher::login()
 {
     CThostFtdcReqUserLoginField reqUserLogin;
+    memset(&reqUserLogin, 0, sizeof (CThostFtdcReqUserLoginField));
     strcpy(reqUserLogin.BrokerID, c_brokerID);
     strcpy(reqUserLogin.UserID, c_userID);
     strcpy(reqUserLogin.Password, c_password);

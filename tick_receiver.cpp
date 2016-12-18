@@ -1,7 +1,6 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include "market_watcher.h"
 #include "tick_receiver.h"
 
 CTickReceiver::CTickReceiver(QObject *obj) :
