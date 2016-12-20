@@ -14,12 +14,12 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     loadCommonMarketData(tradeTimeMap, instrumentMap);
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
-    QByteArray flowPath = settings.value("FlowPath").toString().toLatin1();
+    QByteArray flowPath = settings.value("FlowPath").toByteArray();
 
     settings.beginGroup("AccountInfo");
-    brokerID = settings.value("BrokerID").toString().toLatin1();
-    userID = settings.value("UserID").toString().toLatin1();
-    password = settings.value("Password").toString().toLatin1();
+    brokerID = settings.value("BrokerID").toByteArray();
+    userID = settings.value("UserID").toByteArray();
+    password = settings.value("Password").toByteArray();
     settings.endGroup();
 
     // Pre-convert QString to char*
@@ -138,8 +138,8 @@ void MarketWatcher::subscribe()
     }
 
     pUserApi->SubscribeMarketData(ppInstrumentID, num);
-    delete ppInstrumentID;
-    delete subscribe_array;
+    delete[] ppInstrumentID;
+    delete[] subscribe_array;
 }
 
 static inline quint8 charToDigit(const char ten, const char one)
