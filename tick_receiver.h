@@ -26,7 +26,7 @@ protected:
     const int reason;
 
 public:
-    FrontDisconnectedEvent(int Reason) :
+    explicit FrontDisconnectedEvent(int Reason) :
         QEvent(QEvent::Type(FRONT_DISCONNECTED)),
         reason(Reason) {}
 
@@ -38,11 +38,11 @@ protected:
     const int nTimeLapse;
 
 public:
-    HeartBeatWarningEvent(int nTimeLapse) :
+    explicit HeartBeatWarningEvent(int nTimeLapse) :
         QEvent(QEvent::Type(HEARTBEAT_WARNING)),
         nTimeLapse(nTimeLapse) {}
 
-    int getnTimeLapse() const { return nTimeLapse; }
+    int getLapseTime() const { return nTimeLapse; }
 };
 
 class UserLoginEvent : public QEvent {
@@ -61,7 +61,7 @@ class DepthMarketDataEvent : public QEvent {
 public:
     const CThostFtdcDepthMarketDataField DepthMarketDataField;
 
-    DepthMarketDataEvent(CThostFtdcDepthMarketDataField *pDepthMarketDataField) :
+    explicit DepthMarketDataEvent(CThostFtdcDepthMarketDataField *pDepthMarketDataField) :
         QEvent(QEvent::Type(DEPTH_MARKET_DATA)),
         DepthMarketDataField(*pDepthMarketDataField) {}
 };

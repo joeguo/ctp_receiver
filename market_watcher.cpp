@@ -86,6 +86,10 @@ void MarketWatcher::customEvent(QEvent *event)
     }
         break;
     case HEARTBEAT_WARNING:
+    {
+        auto *hevent = static_cast<HeartBeatWarningEvent*>(event);
+        emit heartBeatWarning(hevent->getLapseTime());
+    }
         break;
     case RSP_USER_LOGIN:
         subscribe();
@@ -164,6 +168,17 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
                        depthMarketDataField.OpenInterest);
 
     // TODO save tick
+}
+
+/*!
+ * \brief CtpExecuter::getTradingDay
+ * 获取交易日
+ *
+ * \return 交易日(YYYYMMDD)
+ */
+QString MarketWatcher::getTradingDay() const
+{
+    return pUserApi->GetTradingDay();
 }
 
 QStringList MarketWatcher::getSubscribeList() const

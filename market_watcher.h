@@ -41,9 +41,11 @@ protected:
     void processDepthMarketData(const CThostFtdcDepthMarketDataField&);
 
 signals:
+    void heartBeatWarning(int nTimeLapse);
     void newMarketData(const QString& instrumentID, uint time, double lastPrice, int volume, double turnover, double openInterest);
 
 public slots:
+    QString getTradingDay() const;
     QStringList getSubscribeList() const;
     void quit();
 };
