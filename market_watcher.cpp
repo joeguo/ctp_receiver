@@ -28,7 +28,13 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     c_password = password.data();
 
     settings.beginGroup("SubscribeList");
-    subscribeSet = settings.childKeys().toSet();
+    QStringList subscribeList = settings.childKeys();
+    foreach (const QString &key, subscribeList) {
+        if (settings.value(key).toString() == "1") {
+            subscribeSet.insert(key);
+        }
+    }
+
     settings.endGroup();
 
     pUserApi = CThostFtdcMdApi::CreateFtdcMdApi(flowPath.data());
