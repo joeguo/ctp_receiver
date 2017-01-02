@@ -157,6 +157,15 @@ static inline quint8 charToDigit(const char ten, const char one)
     return quint8(10 * (ten - '0') + one - '0');
 }
 
+/*!
+ * \brief MarketWatcher::processDepthMarketData
+ * 处理深度市场数据:
+ * 1. 过滤无效的(如在交易时间外的, 或数据有错误的)行情消息
+ * 2. 发送新行情数据(newMarketData signal)
+ * 3. 如果需要, 将行情数据保存到文件
+ *
+ * \param depthMarketDataField 深度市场数据
+ */
 void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField& depthMarketDataField)
 {
     quint8 hour, minute, second;
@@ -177,7 +186,7 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
 }
 
 /*!
- * \brief CtpExecuter::getTradingDay
+ * \brief MarketWatcher::getTradingDay
  * 获取交易日
  *
  * \return 交易日(YYYYMMDD)
@@ -187,11 +196,21 @@ QString MarketWatcher::getTradingDay() const
     return pUserApi->GetTradingDay();
 }
 
+/*!
+ * \brief MarketWatcher::getSubscribeList
+ * 获取订阅合约列表
+ *
+ * \return 订阅合约列表
+ */
 QStringList MarketWatcher::getSubscribeList() const
 {
     return subscribeSet.toList();
 }
 
+/*!
+ * \brief MarketWatcher::quit
+ * 退出
+ */
 void MarketWatcher::quit()
 {
     QCoreApplication::quit();
