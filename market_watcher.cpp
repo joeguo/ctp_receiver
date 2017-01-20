@@ -11,7 +11,7 @@ MarketWatcher::MarketWatcher(QObject *parent) :
 {
     nRequestID = 0;
 
-    loadCommonMarketData(tradeTimeMap, instrumentMap);
+    loadCommonMarketData();
 
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "ctp", "market_watcher");
     QByteArray flowPath = settings.value("FlowPath").toByteArray();
@@ -157,6 +157,41 @@ static inline quint8 charToDigit(const char ten, const char one)
     return quint8(10 * (ten - '0') + one - '0');
 }
 
+static bool isWithinRange(const QTime &t, const QPair<QTime, QTime> &range)
+{
+    if (range.first < range.second) {
+        return range.first <= t && t <= range.second;
+    } else {
+        return range.first <= t || t <= range.second;
+    }
+}
+
+extern QList<Market> markets;
+static bool isValidTime(const QString &instrumentID, quint8 hour, quint8 min, quint8 sec)
+{
+    const int letterLen = instrumentID[1].isDigit() ? 1 : 2;
+    const QString instrument = instrumentID.left(letterLen);
+    foreach (const auto &market, markets) {
+        foreach (const auto &code, market.codes) {
+            if (instrument == code) {
+                int i = 0, size = market.masks.size();
+                for (; i < size; i++) {
+                    if (QRegExp(market.masks[i]).exactMatch(instrumentID)) {
+                        foreach (const auto &tradetime, market.tradetimeses[i]) {
+                            if (isWithinRange(QTime(hour, min, sec), tradetime)) {
+                                return true;
+                            }
+                        }
+                        return false;   // 不在交易时间内
+                    }
+                }
+                return false;   // instrumentID未能匹配任何正则表达式
+            }
+        }
+    }
+    return false;
+}
+
 /*!
  * \brief MarketWatcher::processDepthMarketData
  * 处理深度市场数据:
@@ -173,16 +208,18 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
     minute = charToDigit(depthMarketDataField.UpdateTime[3], depthMarketDataField.UpdateTime[4]);
     second = charToDigit(depthMarketDataField.UpdateTime[6], depthMarketDataField.UpdateTime[7]);
 
-    uint time = (hour * 3600) + (minute * 60) + second;
+    if (isValidTime(depthMarketDataField.InstrumentID, hour, minute, second)) {
+        uint time = (hour * 3600) + (minute * 60) + second;
 
-    emit newMarketData(depthMarketDataField.InstrumentID,
+        emit newMarketData(depthMarketDataField.InstrumentID,
                        time,
                        depthMarketDataField.LastPrice,
                        depthMarketDataField.Volume,
                        depthMarketDataField.Turnover,
                        depthMarketDataField.OpenInterest);
 
-    // TODO save tick
+        // TODO save tick
+    }
 }
 
 /*!

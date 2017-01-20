@@ -31,9 +31,6 @@ protected:
     char* c_userID;
     char* c_password;
 
-    QMultiMap<QString, QPair<QString, QString>> tradeTimeMap;
-    QMultiMap<QString, QString> instrumentMap;
-
     void customEvent(QEvent *) override;
 
     void login();
