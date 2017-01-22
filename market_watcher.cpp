@@ -6,6 +6,8 @@
 #include "market_watcher_adaptor.h"
 #include "tick_receiver.h"
 
+extern QList<Market> markets;
+
 MarketWatcher::MarketWatcher(QObject *parent) :
     QObject(parent)
 {
@@ -36,6 +38,12 @@ MarketWatcher::MarketWatcher(QObject *parent) :
     }
 
     settings.endGroup();
+
+    foreach (const QString &instrumentID, subscribeSet) {
+        if (!checkTradingTimes(instrumentID)) {
+            qDebug() << instrumentID << "has no proper trading time!";
+        }
+    }
 
     pUserApi = CThostFtdcMdApi::CreateFtdcMdApi(flowPath.data());
     pReceiver = new CTickReceiver(this);
@@ -152,22 +160,14 @@ void MarketWatcher::subscribe()
     delete[] subscribe_array;
 }
 
-static inline quint8 charToDigit(const char ten, const char one)
-{
-    return quint8(10 * (ten - '0') + one - '0');
-}
-
-static bool isWithinRange(const QTime &t, const QPair<QTime, QTime> &range)
-{
-    if (range.first < range.second) {
-        return range.first <= t && t <= range.second;
-    } else {
-        return range.first <= t || t <= range.second;
-    }
-}
-
-extern QList<Market> markets;
-static bool isValidTime(const QString &instrumentID, quint8 hour, quint8 min, quint8 sec)
+/*!
+ * \brief MarketWatcher::checkTradingTimes
+ * 查找各个交易市场, 找到相应合约的交易时间并事先储存到map里
+ *
+ * \param instrumentID 合约代码
+ * \return 是否找到了该合约的交易时间
+ */
+bool MarketWatcher::checkTradingTimes(const QString &instrumentID)
 {
     const int letterLen = instrumentID[1].isDigit() ? 1 : 2;
     const QString instrument = instrumentID.left(letterLen);
@@ -177,12 +177,8 @@ static bool isValidTime(const QString &instrumentID, quint8 hour, quint8 min, qu
                 int i = 0, size = market.masks.size();
                 for (; i < size; i++) {
                     if (QRegExp(market.masks[i]).exactMatch(instrumentID)) {
-                        foreach (const auto &tradetime, market.tradetimeses[i]) {
-                            if (isWithinRange(QTime(hour, min, sec), tradetime)) {
-                                return true;
-                            }
-                        }
-                        return false;   // 不在交易时间内
+                        tradingTimeMap[instrumentID] = market.tradetimeses[i];
+                        return true;
                     }
                 }
                 return false;   // instrumentID未能匹配任何正则表达式
@@ -190,6 +186,20 @@ static bool isValidTime(const QString &instrumentID, quint8 hour, quint8 min, qu
         }
     }
     return false;
+}
+
+static inline quint8 charToDigit(const char ten, const char one)
+{
+    return quint8(10 * (ten - '0') + one - '0');
+}
+
+static inline bool isWithinRange(const QTime &t, const QTime &rangeStart, const QTime &rangeEnd)
+{
+    if (rangeStart < rangeEnd) {
+        return rangeStart <= t && t <= rangeEnd;
+    } else {
+        return rangeStart <= t || t <= rangeEnd;
+    }
 }
 
 /*!
@@ -208,17 +218,22 @@ void MarketWatcher::processDepthMarketData(const CThostFtdcDepthMarketDataField&
     minute = charToDigit(depthMarketDataField.UpdateTime[3], depthMarketDataField.UpdateTime[4]);
     second = charToDigit(depthMarketDataField.UpdateTime[6], depthMarketDataField.UpdateTime[7]);
 
-    if (isValidTime(depthMarketDataField.InstrumentID, hour, minute, second)) {
-        uint time = (hour * 3600) + (minute * 60) + second;
+    QString instrumentID(depthMarketDataField.InstrumentID);
+    QTime time(hour, minute, second);
 
-        emit newMarketData(depthMarketDataField.InstrumentID,
-                       time,
-                       depthMarketDataField.LastPrice,
-                       depthMarketDataField.Volume,
-                       depthMarketDataField.Turnover,
-                       depthMarketDataField.OpenInterest);
+    foreach (const auto &tradetime, tradingTimeMap[instrumentID]) {
+        if (isWithinRange(time, tradetime.first, tradetime.second)) {
+            QTime emitTime = (time == tradetime.second) ? time.addSecs(-1) : time;
+            emit newMarketData(instrumentID,
+                               QTime(0, 0).secsTo(emitTime),
+                               depthMarketDataField.LastPrice,
+                               depthMarketDataField.Volume,
+                               depthMarketDataField.Turnover,
+                               depthMarketDataField.OpenInterest);
 
-        // TODO save tick
+            // TODO save tick
+            break;
+        }
     }
 }
 

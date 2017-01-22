@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QMultiMap>
 
+class QTime;
 class CThostFtdcMdApi;
 class CTickReceiver;
 struct CThostFtdcDepthMarketDataField;
@@ -23,6 +24,7 @@ protected:
     CThostFtdcMdApi *pUserApi;
     CTickReceiver *pReceiver;
     QSet<QString> subscribeSet;
+    QMap<QString, QList<QPair<QTime, QTime>>> tradingTimeMap;
 
     QByteArray brokerID;
     QByteArray userID;
@@ -35,6 +37,7 @@ protected:
 
     void login();
     void subscribe();
+    bool checkTradingTimes(const QString &instrumentID);
     void processDepthMarketData(const CThostFtdcDepthMarketDataField&);
 
 signals:
