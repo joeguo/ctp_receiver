@@ -8,6 +8,24 @@
 
 extern QList<Market> markets;
 
+/*!
+ * \brief getInstrumentName
+ * 从合约代码里提取交易品种名(就是去掉交割月份)
+ * 比如 cu1703 --> cu, i1705 --> i, CF705 --> CF
+ *
+ * \param instrumentID 合约代码
+ * \return 交易品种名
+ */
+static QString getInstrumentName(const QString &instrumentID) {
+    const int len = instrumentID.length();
+    for (int i = 0; i < len; i++) {
+        if (instrumentID[i].isDigit()) {
+            return instrumentID.left(i);
+        }
+    }
+    return "";
+}
+
 MarketWatcher::MarketWatcher(QObject *parent) :
     QObject(parent)
 {
@@ -169,7 +187,7 @@ void MarketWatcher::subscribe()
  */
 bool MarketWatcher::checkTradingTimes(const QString &instrumentID)
 {
-    const QString instrument = instrumentID.left(instrumentID.length() - 4);
+    const QString instrument = getInstrumentName(instrumentID);
     foreach (const auto &market, markets) {
         foreach (const auto &code, market.codes) {
             if (instrument == code) {
