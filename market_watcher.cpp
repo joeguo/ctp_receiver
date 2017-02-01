@@ -169,14 +169,13 @@ void MarketWatcher::subscribe()
  */
 bool MarketWatcher::checkTradingTimes(const QString &instrumentID)
 {
-    const int letterLen = instrumentID[1].isDigit() ? 1 : 2;
-    const QString instrument = instrumentID.left(letterLen);
+    const QString instrument = instrumentID.left(instrumentID.length() - 4);
     foreach (const auto &market, markets) {
         foreach (const auto &code, market.codes) {
             if (instrument == code) {
-                int i = 0, size = market.masks.size();
+                int i = 0, size = market.regexs.size();
                 for (; i < size; i++) {
-                    if (QRegExp(market.masks[i]).exactMatch(instrumentID)) {
+                    if (QRegExp(market.regexs[i]).exactMatch(instrumentID)) {
                         tradingTimeMap[instrumentID] = market.tradetimeses[i];
                         return true;
                     }
